@@ -4,6 +4,8 @@ namespace matiasdamian\LangManager;
 
 use pocketmine\plugin\PluginBase;
 
+use matiasdamian\LangManager\command\LangCommand;
+
 /**
  * Class Main
  *
@@ -13,6 +15,8 @@ class Main extends PluginBase
 {
 
 	public const MAXMIND_DB_RESOURCE = "GeoLite2-Country.mmdb";
+	public const MAXMIND_DB_RELEASE = "2024.11.10";
+	public const MAXMIND_DB_RESOURCE_URL = "https://github.com/matiasdamiandelsolar/GeoLite.mmdb/releases/download/2024.11.10/GeoLite2-Country.mmdb";
 
 	/**
 	 * @var Main|null $instance
@@ -35,7 +39,6 @@ class Main extends PluginBase
 	public function onEnable(): void
 	{
 		self::$instance = $this;
-		$this->saveResource(self::MAXMIND_DB_RESOURCE, true);
 		$this->saveResource("lang/en.ini", false);
 		$this->saveResource("lang/es.ini", false);
 

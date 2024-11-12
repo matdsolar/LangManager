@@ -12,6 +12,8 @@ use pocketmine\Server;
 
 use GeoIp2\Database\Reader as GeoIpReader;
 
+use matiasdamian\LangManager\task\DownloadMaxMindDatabaseTask;
+
 /**
  * Class LangManager
  *
@@ -89,7 +91,7 @@ class LangManager
 		return self::$instance;
 	}
 
-	private function getPlugin(): ?Main
+	public function getPlugin(): ?Main
 	{
 		return $this->plugin;
 	}
@@ -137,31 +139,37 @@ class LangManager
 
 		$plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
 
-		if (class_exists(GeoIpReader::class)) {
-			if (file_exists($plugin->getDataFolder() . Main::MAXMIND_DB_RESOURCE)) {
-				$this->geoIpReader = new GeoIpReader($plugin->getDataFolder() . Main::MAXMIND_DB_RESOURCE);
-			} else {
-				$plugin->getLogger()->warning("MaxMind database not found. Multi-language support is disabled");
-			}
-		} else {
+		if (!class_exists(GeoIpReader::class)) {
 			$plugin->getLogger()->warning("geoip library not found. Multi-language support is disabled");
 		}
+		$version = $plugin->getConfig()->get("maxmind-db-version");
+		if (!file_exists($plugin->getDataFolder() . Main::MAXMIND_DB_RESOURCE) or $version !== Main::MAXMIND_DB_RELEASE) {
+			$plugin->getLogger()->info("Downloading MaxMind GeoIP database...");
+			$plugin->getServer()->getAsyncPool()->submitTask(new DownloadMaxMindDatabaseTask());
+		} else {
+			$plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
+			$this->initializeGeoIpReader();
+		}
+
 		foreach (self::ALL_ISO_CODES as $iso) {
 			$path = $plugin->getDataFolder() . "lang/" . $iso . ".ini";
 			$plugin->saveResource($path, true);
 			if (file_exists($path)) {
-
-
 				$this->lang[$iso] = (array) parse_ini_file($path, false, INI_SCANNER_NORMAL);
 			}
-		}
-		foreach (self::ALL_ISO_CODES as $iso) {
-			foreach ($this->lang["en"] as $key => $str) {
-				if (!isset($this->lang[$iso][$key])) {
-					$this->lang[$iso][$key] = $str;
+			foreach (self::ALL_ISO_CODES as $iso) {
+				foreach ($this->lang["en"] as $key => $str) {
+					if (!isset($this->lang[$iso][$key])) {
+						$this->lang[$iso][$key] = $str;
+					}
 				}
 			}
 		}
+	}
+
+	public function initializeGeoIpReader(): void
+	{
+		$this->geoIpReader = new GeoIpReader($this->getPlugin()->getDataFolder() . Main::MAXMIND_DB_RESOURCE);
 	}
 
 
@@ -432,6 +440,7 @@ class LangManager
 		if (isset($this->ipLangCache[$ip])) {
 			return $this->ipLangCache[$ip];
 		}
+
 		$country = $this->getCountryCode($ip);
 		switch ($country) {
 			case "DJ":
