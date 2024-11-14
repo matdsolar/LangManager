@@ -221,33 +221,32 @@ class LangManager
 	 */
 	private function prepare(): void
 	{
-		$plugin = Main::getInstance();
-		$this->log = new Config($plugin->getServer()->getDataPath() . "LangManager.log", Config::ENUM);
+		$this->log = new Config($this->plugin->getServer()->getDataPath() . "LangManager.log", Config::ENUM);
 
-		$plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
+		$this->plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
 
 		if (!class_exists(GeoIpReader::class)) {
 			$plugin->getLogger()->warning("geoip library not found. Multi-language support is disabled");
 		}
-		$version = $plugin->getConfig()->get("maxmind-db-version");
-		if (!file_exists($plugin->getDataFolder() . Main::MAXMIND_DB_RESOURCE) or $version !== Main::MAXMIND_DB_RELEASE) {
-			$plugin->getLogger()->info("Downloading MaxMind GeoIP database...");
-			$plugin->getServer()->getAsyncPool()->submitTask(new DownloadMaxMindDatabaseTask());
+		$version = $this->plugin->getConfig()->get("maxmind-db-version");
+		if (!file_exists($this->plugin->getDataFolder() . Main::MAXMIND_DB_RESOURCE) or $version !== Main::MAXMIND_DB_RELEASE) {
+			$this->plugin->getLogger()->info("Downloading MaxMind GeoIP database...");
+			$this->plugin->getServer()->getAsyncPool()->submitTask(new DownloadMaxMindDatabaseTask());
 		} else {
-			$plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
+			$this->plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
 			$this->initializeGeoIpReader();
 		}
 		
 		$defaultConfig = $this->lang[self::LANG_DEFAULT] ?? null;
-		@mkdir($plugin->getServer()->getDataPath() . "lang/", 0777);
+		@mkdir($this->plugin->getServer()->getDataPath() . "lang/", 0777);
 		foreach (self::ALL_ISO_CODES as $iso){
-			$path = $plugin->getResourcePath("lang/" . $iso . ".yml");
-			$newPath = $plugin->getServer()->getDataPath() . "lang/" . $iso . ".yml";
+			$path = $this->plugin->getResourcePath("lang/" . $iso . ".yml");
+			$newPath = $this->plugin->getServer()->getDataPath() . "lang/" . $iso . ".yml";
 			if(file_exists($path) && !file_exists($newPath)){
 				try{
 					Filesystem::safeFilePutContents($newPath, Filesystem::fileGetContents($path));
 				}catch(\Exception $e){
-					$plugin->getLogger()->error("Can't write to file: " . $path);
+					$this->plugin->getLogger()->error("Can't write to file: " . $path);
 					continue;
 				}
 			}
@@ -267,6 +266,10 @@ class LangManager
 					}
 				}
 			}
+		}
+		
+		if(!$this->plugin->getConfig()->exists("language-list")){
+			$this->plugin->getConfig()->set("language-list", array_values(self::ALL_ISO_CODES));
 		}
 	}
 

@@ -43,7 +43,6 @@ class Main extends PluginBase
 	 */
 	public function onEnable(): void
 	{
-		LangManager::addKey("testkey-2", "Test message");
 
 		$this->getServer()->getCommandMap()->register("langmanager", new LangCommand($this));
 		$this->getLogger()->info("LangManager enabled.");

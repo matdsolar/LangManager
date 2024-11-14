@@ -17,11 +17,14 @@ use matiasdamian\LangManager\LangManager;
  */
 class LangCommand extends Command
 {
+	/** @var Main  */
+	private Main $plugin;
 
 	public function __construct(Main $plugin)
 	{
 		parent::__construct("lang", "Set your preferred language", "/lang <language>", ["language"]);
 		$this->setPermission("langmanager.lang");
+		$this->plugin = $plugin;
 	}
 
 	/**
@@ -40,8 +43,12 @@ class LangCommand extends Command
 		}
 
 		$languages = [];
+		$languageList = array_change_key_case((array) $this->plugin->getConfig()->get("language-list"));
+		
 		foreach (LangManager::ALL_ISO_CODES as $language => $iso) {
-			$languages[] = LangManager::translate("language_list", $sender, $language, $iso);
+			if(in_array(strtolower($iso), $languageList)){
+				$languages[] = LangManager::translate("language_list", $sender, $language, $iso);
+			}
 		}
 		$languages = implode(", ", $languages);
 

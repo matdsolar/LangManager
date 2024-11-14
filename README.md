@@ -30,6 +30,12 @@ Language files supported:
 | Arabic            | ar.yml |
 | Japanese           | ja.yml |
 
+To add or remove a language to the language list in /lang, simply modify the `config.yml` file.
+```
+language-list:
+- en
+- es
+```
 ## Using LangManager as a developer
 The plugin is equipped with built-in functions to send messages directly to players and translate strings, eliminating the need for hardcoded messages in your code.
 This section will guide you on how to use the following methods:
