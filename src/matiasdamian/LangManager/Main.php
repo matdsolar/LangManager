@@ -32,19 +32,20 @@ class Main extends PluginBase
 	{
 		return self::$instance;
 	}
+	
+	public function onLoad() : void{
+		self::$instance = $this;
+		new LangManager($this);
+	}
 
 	/**
 	 * @return void
 	 */
 	public function onEnable(): void
 	{
-		self::$instance = $this;
-		$this->saveResource("lang/en.ini", false);
-		$this->saveResource("lang/es.ini", false);
+		LangManager::addKey("testkey-2", "Test message");
 
 		$this->getServer()->getCommandMap()->register("langmanager", new LangCommand($this));
-
-		new LangManager($this);
 		$this->getLogger()->info("LangManager enabled.");
 	}
 

@@ -7,6 +7,7 @@ namespace matiasdamian\LangManager;
 use pocketmine\command\CommandSender;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Config;
+use pocketmine\utils\Filesystem;
 use pocketmine\player\Player;
 use pocketmine\Server;
 
@@ -22,7 +23,7 @@ use matiasdamian\LangManager\task\DownloadMaxMindDatabaseTask;
  */
 class LangManager
 {
-	/** @var string[] $RAINBOW_PATTERN Defines the color pattern for rainbow text. */
+	/** @var string[] Defines the color pattern for rainbow text. */
 	private static array $RAINBOW_PATTERN = [
 		TextFormat::RED,
 		TextFormat::GOLD,
@@ -35,11 +36,11 @@ class LangManager
 
 	private static ?self $instance = null;
 
-	/** @var array $lang Language data array. */
+	/** @var array<string, string[]> $lang Language data. */
 	private array $lang = [];
-	/** @var string[] $ipLangCache Caches the languages based on IP addresses. */
+	/** @var array<string, string[]> $ipLangCache Caches the languages based on IP addresses. */
 	private array $ipLangCache = [];
-	/** @var array $countryCodeCache */
+	/** @var array<string, string[]> $countryCodeCache */
 	private array $countryCodeCache = [];
 	/** @var GeoIpReader|null $geoIpReader GeoIP database reader for fetching country codes. */
 	private ?GeoIpReader $geoIpReader = null;
@@ -58,7 +59,7 @@ class LangManager
 
 	public const LANG_DEFAULT = self::LANG_ENGLISH;
 
-	/** @var string[] ALL_ISO_CODES Contains all supported ISO language codes. */
+	/** @var array<string, string[]> Contains all supported ISO language codes. */
 	public const ALL_ISO_CODES = [
 		"English" => self::LANG_ENGLISH,
 		"Spanish" => self::LANG_SPANISH,
@@ -90,10 +91,20 @@ class LangManager
 	{
 		return self::$instance;
 	}
-
+	
+	/**
+	 * @return Main|null
+	 */
 	public function getPlugin(): ?Main
 	{
 		return $this->plugin;
+	}
+	
+	/**
+	 * @return Config
+	 */
+	private function getLog() : Config{
+		return $this->log;
 	}
 
 	/**
@@ -110,11 +121,87 @@ class LangManager
 
 	public static function close()
 	{
-		if (self::$instance === null) {
+		$instance = self::getInstance();
+		if ($instance === null){
 			return;
 		}
-		self::$instance->getPlugin()->getConfig()->save();
-		self::$instance->log->save();
+		$instance->getPlugin()->getConfig()->save();
+		$instance->getLog()->save();
+		foreach($instance->lang as $config){
+			$config->save();
+		}
+	}
+	
+	/**
+	 * Sends a message directly to a player.
+	 *
+	 * @param string $key The translation key.
+	 * @param mixed ...$params Additional parameters for the message.
+	 * @api
+	 */
+	public static function send(string $key, ...$params): void
+	{
+		$msg = self::translate($key, ...$params);
+		if (count($params) > 0 && $params[0] instanceof CommandSender) {
+			$params[0]->sendMessage($msg);
+		}
+	}
+	
+	/**
+	 * Translates a string based on the key and parameters provided.
+	 *
+	 * @param string $key The translation key.
+	 * @param mixed ...$params Additional parameters for the message.
+	 * @return string The translated string.
+	 * @api
+	 */
+	public static function translate(string $key, ...$params): string
+	{
+		if (self::$instance instanceof self) {
+			return self::$instance->translateContainer($key, ...$params);
+		}
+		return $key;
+	}
+	
+	/**
+	 * Adds a new language key to LangManager.
+	 *
+	 * @param string $key The key you want to add in the language file.
+	 * @param string $message The default message for the key you want to add (in English)
+	 * @return bool
+	 */
+	public static function addKey(string $key, string $message): bool{
+		$instance = self::getInstance();
+		if($instance === null){
+			return false;
+		}
+		
+		$defaultConfig = $instance->lang[self::LANG_DEFAULT];
+		if($defaultConfig->exists($key)){
+			return false;
+		}
+		$defaultConfig->set($key, $message);
+		foreach(self::ALL_ISO_CODES as $iso){
+			if(isset($instance->lang[$iso]) && !$instance->lang[$iso]->exists($key)){
+				$instance->lang[$iso]->set($key, $message);
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * @param string $iso
+	 * @param string $key
+	 * @return string|null
+	 */
+	private function getMessage(string $iso, string $key) : ?string{
+		
+		if(isset($this->lang[$iso])){
+			if($this->lang[$iso]->exists($key)){
+				return strval($this->lang[$iso]->get($key));
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -126,7 +213,7 @@ class LangManager
 	 */
 	private function log(int $type, string $key, string $iso): void
 	{
-		$this->log->set("[" . $type . "]: " . strtoupper($iso) . " " . $key, true);
+		$this->getLog()->set("[" . $type . "]: " . strtoupper($iso) . " " . $key, true);
 	}
 
 	/**
@@ -150,17 +237,33 @@ class LangManager
 			$plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
 			$this->initializeGeoIpReader();
 		}
-
-		foreach (self::ALL_ISO_CODES as $iso) {
-			$path = $plugin->getDataFolder() . "lang/" . $iso . ".ini";
-			$plugin->saveResource($path, true);
-			if (file_exists($path)) {
-				$this->lang[$iso] = (array) parse_ini_file($path, false, INI_SCANNER_NORMAL);
+		
+		$defaultConfig = $this->lang[self::LANG_DEFAULT] ?? null;
+		@mkdir($plugin->getServer()->getDataPath() . "lang/", 0777);
+		foreach (self::ALL_ISO_CODES as $iso){
+			$path = $plugin->getResourcePath("lang/" . $iso . ".yml");
+			$newPath = $plugin->getServer()->getDataPath() . "lang/" . $iso . ".yml";
+			if(file_exists($path) && !file_exists($newPath)){
+				try{
+					Filesystem::safeFilePutContents($newPath, Filesystem::fileGetContents($path));
+				}catch(\Exception $e){
+					$plugin->getLogger()->error("Can't write to file: " . $path);
+					continue;
+				}
 			}
-			foreach (self::ALL_ISO_CODES as $iso) {
-				foreach ($this->lang["en"] as $key => $str) {
-					if (!isset($this->lang[$iso][$key])) {
-						$this->lang[$iso][$key] = $str;
+			
+			if(file_exists($newPath)){
+				$this->lang[$iso] = new Config($newPath, Config::YAML);
+			}
+		}
+		if($defaultConfig !== null) {
+			foreach (self::ALL_ISO_CODES as $iso){
+				$config = $this->lang[$iso] ?? null;
+				if($config !== null) {
+					foreach ($config->getAll() as $key => $str) {
+						if (!$config->exists($key) && $defaultConfig->exists($key)){
+							$config->set($key, strval($defaultConfig->get($key)));
+						}
 					}
 				}
 			}
@@ -172,45 +275,12 @@ class LangManager
 		$this->geoIpReader = new GeoIpReader($this->getPlugin()->getDataFolder() . Main::MAXMIND_DB_RESOURCE);
 	}
 
-
-	/**
-	 * Sends a message directly to a player.
-	 *
-	 * @param string $key The translation key.
-	 * @param mixed ...$params Additional parameters for the message.
-	 * @api
-	 */
-	public static function send(string $key, ...$params): void
-	{
-		$msg = self::translate($key, ...$params);
-		if (count($params) > 0 && $params[0] instanceof CommandSender) {
-			$params[0]->sendMessage($msg);
-		}
-	}
-
-	/**
-	 * Translates a string based on the key and parameters provided.
-	 *
-	 * @param string $key The translation key.
-	 * @param mixed ...$params Additional parameters for the message.
-	 * @return string The translated string.
-	 * @api
-	 */
-	public static function translate(string $key, ...$params): string
-	{
-		if (self::$instance instanceof self) {
-			return self::$instance->translateContainer($key, ...$params);
-		}
-		return $key;
-	}
-
 	/**
 	 * Handles the translation process, including player variables.
 	 *
 	 * @param string $key The translation key.
 	 * @param mixed ...$params Additional parameters for the message.
 	 * @return string The translated string.
-	 * @internal
 	 */
 	private function translateContainer(string $key, ...$params): string
 	{
@@ -253,6 +323,7 @@ class LangManager
 		if (!is_string($iso) || !in_array($iso, self::ALL_ISO_CODES)) {
 			$iso = $this->getLangByAddress($player->getNetworkSession()->getIp());
 		}
+		
 		return $iso;
 	}
 
@@ -354,9 +425,9 @@ class LangManager
 	 */
 	private function translateString(string $key, string $iso, ...$params): string
 	{
-		if (!isset($this->lang[$iso][$key])) {
+		if ($this->getMessage($iso, $key) === null) {
 			$this->log(self::LOG_NO_ISO_MESSAGE, $key, $iso);
-			if (isset($this->lang[self::LANG_DEFAULT][$key])) {
+			if ($this->getMessage(self::LANG_DEFAULT, $key) !== null) {
 				$iso = self::LANG_DEFAULT;
 			}
 		}
@@ -364,7 +435,7 @@ class LangManager
 		$keyData = "[" . $iso . "][" . $key . "]";
 
 
-		$str = $this->lang[$iso][$key] ?? $keyData;
+		$str = $this->getMessage($iso, $key) ?? $keyData;
 
 
 		foreach ($params as $i => $param) {
@@ -393,7 +464,7 @@ class LangManager
 				$pointer++;
 			}
 			$subkey = substr($originalStr, $start, intval($pointer - $start));
-			if (isset($this->lang[$iso][$subkey]) && $subkey !== $key) {
+			if($this->getMessage($iso, $subkey) !== null && $subkey !== $key) {
 				$str = str_replace("{" . $subkey . "}", $this->translateString($subkey, $iso), $str);
 			}
 		}

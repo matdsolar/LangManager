@@ -1,0 +1,16 @@
+# Note: The messages below are demonstration messages illustrating how the plugin utilizes language features.
+# These should not be removed, as they are used for the /setlang command.
+
+# General plugin messages
+welcome_message: "¡Bienvenido al servidor!"
+farewell_message: "¡Adiós! Esperamos verte de nuevo pronto."
+language_set: "Tu idioma ha sido configurado al {%0}."
+
+# Command responses
+command_not_found: "Comando no reconocido. Escribe /help para ver una lista de comandos."
+language_list: "{%0} ({%1})"
+language_choose: "Elige tu idioma: /lang <iso>. Idiomas disponibles:"
+
+# Error messages
+error_no_permission: "No tienes permiso para usar este comando."
+error_invalid_language: "Idioma seleccionado no válido. Inténtalo de nuevo."

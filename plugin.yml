@@ -3,6 +3,7 @@ main: matiasdamian\LangManager\Main
 version: 1.0.0
 api: [5.0.0]
 author: matiasdamian
+load: STARTUP
 description: A language management plugin for PocketMine-MP with multi-language support and variable translation.
 permissions:
   langmanager.lang:

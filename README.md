@@ -5,24 +5,66 @@ LangManager is a powerful plugin that adds multilingual support to your Minecraf
 ## Key Features
 
 ### Automatic Language Detection
-The plugin automatically detects the user’s language and localizes the server based on the player’s location. Players always have the option to choose another language using the command `/setlang`
+The plugin automatically detects the user’s language and localizes the server based on the player’s location. Players always have the option to choose another language using the command /setlang
+
 ### Language Switching
 Players can effortlessly switch between available languages using /setlang, allowing them to enjoy the game in their preferred language.
 ### Centralized Message Management
 With LangManager, managing in-game messages, greetings, command responses, and error messages becomes easy. All messages are stored in easily manageable language files, allowing for straightforward translations tailored to the server owner’s preferences.
 
-## Using LangManager
+## Using LangManager as a user
+The language files are stored in lang/ within your server folder. Make sure the server is turned off before editing any language files.
+
+Language files supported:
+
+| Language         | File   |                                       
+|------------------|------- |
+| English          | en.yml |
+| Spanish          | es.yml |
+ | Hindi           | hi.yml |
+| Portuguese        | pt.yml |
+| Chinese            | zh.yml  |
+ | Russian            | ru.yml |
+| French            | fr.yml |
+| German            | de.yml  |
+| Arabic            | ar.yml |
+| Japanese           | ja.yml |
+
+## Using LangManager as a developer
 The plugin is equipped with built-in functions to send messages directly to players and translate strings, eliminating the need for hardcoded messages in your code.
-This section will guide you on how to use the `LangManager::send()` and `LangManager::translate()` methods effectively.
+This section will guide you on how to use the following methods:
+- `LangManager::addKey()`
+- `LangManager::send()`
+- `LangManager::translate()`
 
 First, make sure you import the LangManager class in your plugin.
 ```php
 use matiasdamian\LangManager\LangManager;
 ```
 
+### Adding a new language key with `LangManager::addKey()`
+If you are a plugin developer and want to use LangManager, it is very easy to do so.
+
+**Syntax:**
+```php
+LangManager::addKey(string $key, string $message) : bool;
+```
+
+Make sure you add LangManager as a dependency in your plugin.yml:
+
+```
+depend: [LangManager]
+```
+
+**Paramaters:**
+- string $key: The key you want to add in the language file.
+- string $message: The default message for the key you want to add (in English)
+
+To avoid conflicts with other plugins, it's recommended to add a prefix to your key. For example, use a prefix like `MyPlugin-`, so your key might look like `MyPlugin-key`. This ensures that the key is unique across all plugins.
+
 ### Sending Messages with `LangManager::send()`
 
-This function is designed to send messages to players in their preferred language.
+This method is designed to send messages to players in their preferred language.
 
 **Syntax:**
 
@@ -42,11 +84,11 @@ $messageKey = "welcome_message"; // The message key from your language file
 
 LangManager::send($messageKey, $player);
 ```
-In this example, if the player’s language is set to English, they will receive the message defined by the `welcome_message` key in the `en.ini` file.
+In this example, if the player’s language is set to English, they will receive the message defined by the `welcome_message` key in the `en.yml` file.
 
 ### Translating Messages with `LangManager::translate()`
 
-This function is useful for translating strings that are not directly sent to the player, such as pop-ups.
+This method is useful for translating strings that are not directly sent to the player, such as pop-ups.
 
 **Syntax:**
 ```php
@@ -67,7 +109,7 @@ $messageKey = "language_choose"; // The message key from your language file
 $translatedMessage = LangManager::translate($messageKey, $player);
 $player->sendMessage($translatedMessage); // Sending the translated message to the player
 ```
-In this example, the player will receive the message defined by the `language_choose` key in the `es.ini` file.
+In this example, the player will receive the message defined by the `language_choose` key in the `en.yml` file.
 
 ## Using parameters in translations
 
@@ -131,5 +173,4 @@ The output would be:
 ```
 
 ## Licensing information
-
 This project is licensed under LGPL-3.0. Please see the LICENSE file for details.
