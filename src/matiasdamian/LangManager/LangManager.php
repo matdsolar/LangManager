@@ -56,6 +56,16 @@ class LangManager
 	private const LANG_GERMAN = "de";
 	private const LANG_ARABIC = "ar";
 	private const LANG_JAPANESE = "ja";
+	private const LANG_BENGALI = "bn";
+	private const LANG_INDONESIAN = "id";
+	private const LANG_KOREAN = "ko";
+	private const LANG_TURKISH = "tr";
+	private const LANG_VIETNAMESE = "vi";
+	private const LANG_POLISH = "pl";
+	private const LANG_THAI = "th";
+	private const LANG_ITALIAN = "it";
+	private const LANG_PERSIAN = "fa";
+	private const LANG_SWEDISH = "sv";
 
 	public const LANG_DEFAULT = self::LANG_ENGLISH;
 
@@ -70,7 +80,17 @@ class LangManager
 		"French" => self::LANG_FRENCH,
 		"German" => self::LANG_GERMAN,
 		"Arabic" => self::LANG_ARABIC,
-		"Japanese" => self::LANG_JAPANESE
+		"Japanese" => self::LANG_JAPANESE,
+		"Bengali" => self::LANG_BENGALI,
+		"Indonesian" => self::LANG_INDONESIAN,
+		"Korean" => self::LANG_KOREAN,
+		"Turkish" => self::LANG_TURKISH,
+		"Vietnamese" => self::LANG_VIETNAMESE,
+		"Polish" => self::LANG_POLISH,
+		"Thai" => self::LANG_THAI,
+		"Italian" => self::LANG_ITALIAN,
+		"Persian" => self::LANG_PERSIAN,
+		"Swedish" => self::LANG_SWEDISH
 	];
 
 	/** @var Main|null */

@@ -3,7 +3,7 @@
 
 # Command responses
 command_not_found: "Command not recognized. Type /help for a list of commands."
-language_list: "{%0} ({%1})"
+language_list: "{%0} => {%1}"
 language_choose: "Choose your language: /lang <iso> Available languages: "
 language_set: "Your language has been set to {%0}."
 

@@ -50,7 +50,7 @@ class LangCommand extends Command
 				$languages[] = LangManager::translate("language_list", $sender, $language, $iso);
 			}
 		}
-		$languages = implode(", ", $languages);
+		$languages = implode("\n", $languages);
 
 		if (count($args) < 1) {
 			$sender->sendMessage(LangManager::translate("language_choose", $sender) . "\n" . $languages);

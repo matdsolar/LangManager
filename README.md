@@ -18,17 +18,27 @@ The language files are stored in lang/ within your server folder. Make sure the 
 Language files supported:
 
 | Language         | File   |                                       
-|------------------|------- |
+|------------------|--------|
 | English          | en.yml |
 | Spanish          | es.yml |
  | Hindi           | hi.yml |
 | Portuguese        | pt.yml |
-| Chinese            | zh.yml  |
+| Chinese            | zh.yml |
  | Russian            | ru.yml |
 | French            | fr.yml |
-| German            | de.yml  |
+| German            | de.yml |
 | Arabic            | ar.yml |
 | Japanese           | ja.yml |
+ | Bengali           | bn.yml |
+ | Indonesian        | id.yml |
+ | Korean            | ko.yml |
+  | Turkish          | tr.yml |
+  | Vietnamese        | vi.yml |
+  | Polish             | pl.yml |
+   | Thai               | th.yml |
+  | Italian              | it.yml |
+   | Persian             | fa.yml  |
+ | Swedish               | sv.yml  |
 
 To add or remove a language to the language list in /lang, simply modify the `config.yml` file.
 ```
