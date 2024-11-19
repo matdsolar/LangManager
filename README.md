@@ -1,5 +1,5 @@
 # LangManager
-
+![](https://github.com/matiasdamiandelsolar/LangManager/blob/main/icon.png)
 LangManager is a powerful plugin that adds multilingual support to your Minecraft server, enabling seamless language management and translation for players. With this plugin, server owners can easily provide a personalized experience by allowing players to select their preferred language.
 
 ## Key Features
