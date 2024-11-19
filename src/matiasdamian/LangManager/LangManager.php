@@ -195,7 +195,6 @@ class LangManager
 		if($instance === null){
 			return false;
 		}
-		
 		$defaultConfig = $instance->lang[self::LANG_DEFAULT];
 		if($defaultConfig->exists($key)){
 			return false;
@@ -218,6 +217,7 @@ class LangManager
 		
 		if(isset($this->lang[$iso])){
 			if($this->lang[$iso]->exists($key)){
+				
 				return strval($this->lang[$iso]->get($key));
 			}
 		}
@@ -320,8 +320,8 @@ class LangManager
 
 				$str = $this->translateString($key, $iso, ...$params);
 			} else {
-
 				$iso = $this->getPlayerLanguage($player);
+				
 				$str = $this->translateString($key, $iso, ...$params);
 				$str = $this->translatePlayerVars($str, $player);
 			}
@@ -450,6 +450,7 @@ class LangManager
 	{
 		if ($this->getMessage($iso, $key) === null) {
 			$this->log(self::LOG_NO_ISO_MESSAGE, $key, $iso);
+		
 			if ($this->getMessage(self::LANG_DEFAULT, $key) !== null) {
 				$iso = self::LANG_DEFAULT;
 			}

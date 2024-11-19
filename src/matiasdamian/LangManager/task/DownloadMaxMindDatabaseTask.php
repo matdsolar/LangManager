@@ -7,6 +7,7 @@ namespace matiasdamian\LangManager\task;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetRequestResult;
+use pocketmine\utils\Filesystem;
 
 use matiasdamian\LangManager\Main;
 use matiasdamian\LangManager\LangManager;
@@ -37,7 +38,10 @@ class DownloadMaxMindDatabaseTask extends AsyncTask
         $result = $this->getResult();
         $plugin = LangManager::getInstance()?->getPlugin();
         if ($result !== null) {
-            @file_put_contents(Main::getInstance()->getDataFolder() . Main::MAXMIND_DB_RESOURCE, $result);
+			Filesystem::safeFilePutContents(
+				Main::getInstance()->getDataFolder() . Main::MAXMIND_DB_RESOURCE,
+				$result
+			);
             $plugin->getLogger()->info("MaxMind GeoLite2-Country database downloaded.");
             $plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
             $plugin->getConfig()->set("maxmind-db-version", Main::MAXMIND_DB_RELEASE);
