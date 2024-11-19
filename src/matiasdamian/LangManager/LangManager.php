@@ -890,6 +890,9 @@ class LangManager
 	 */
 	private function replaceHTMLTags(string $str): string
 	{
+		if(trim($str) === "") {
+			return $str;
+		}
 		if (extension_loaded("xml")) {
 			$dom = new \DomDocument();
 			@$dom->loadHTML($str);
