@@ -24,7 +24,7 @@ use matiasdamian\LangManager\task\DownloadMaxMindDatabaseTask;
 class LangManager
 {
 	/** @var string[] Defines the color pattern for rainbow text. */
-	private static array $RAINBOW_PATTERN = [
+	private static $RAINBOW_PATTERN = [
 		TextFormat::RED,
 		TextFormat::GOLD,
 		TextFormat::YELLOW,
@@ -252,7 +252,7 @@ class LangManager
 		$this->plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
 
 		if (!class_exists(GeoIpReader::class)) {
-			$plugin->getLogger()->warning("geoip library not found. Multi-language support is disabled");
+			$this->plugin->getLogger()->warning("geoip library not found. Multi-language support is disabled");
 		}
 		$version = $this->plugin->getConfig()->get("maxmind-db-version");
 		if (!file_exists($this->plugin->getDataFolder() . Main::MAXMIND_DB_RESOURCE) or $version !== Main::MAXMIND_DB_RELEASE) {
@@ -377,7 +377,7 @@ class LangManager
 	 */
 	public function isLanguageAvailable(string $iso): bool
 	{
-		foreach (self::ALL_ISO_CODES as $language => $lang) {
+		foreach (self::ALL_ISO_CODES as $lang) {
 			if ($iso === $lang) {
 				return true;
 			}
@@ -510,7 +510,6 @@ class LangManager
 	 *
 	 * @param string $ip The player's IP address.
 	 * @return string The two-letter country code (ISO 3166-1).
-	 * @throws \Exception
 	 */
 	public function getCountryCode(string $ip): string
 	{
