@@ -1,0 +1,15 @@
+# Configuration file for LangManager
+
+# This is the list of languages shown in the /lang command.
+# Each language should be defined by its valid ISO code.
+# You can find all the ISO codes here:
+# https://github.com/matiasdamiandelsolar/LangManager
+language-list:
+  # English language (ISO code: en)
+  - en
+  # Spanish language (ISO code: es)
+  - es
+  # Add more languages below as needed. For example:
+  # - fr  # French (ISO code: fr)
+  # - de  # German (ISO code: de)
+  # - ja  # Japanese (ISO code: ja)  

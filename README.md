@@ -22,30 +22,36 @@ Language files supported:
 |------------------|--------|
 | English          | en.yml |
 | Spanish          | es.yml |
- | Hindi           | hi.yml |
+| Hindi           | hi.yml |
 | Portuguese        | pt.yml |
 | Chinese            | zh.yml |
- | Russian            | ru.yml |
+| Russian            | ru.yml |
 | French            | fr.yml |
 | German            | de.yml |
 | Arabic            | ar.yml |
 | Japanese           | ja.yml |
- | Bengali           | bn.yml |
- | Indonesian        | id.yml |
- | Korean            | ko.yml |
-  | Turkish          | tr.yml |
-  | Vietnamese        | vi.yml |
-  | Polish             | pl.yml |
-   | Thai               | th.yml |
-  | Italian              | it.yml |
-   | Persian             | fa.yml  |
- | Swedish               | sv.yml  |
+| Bengali           | bn.yml |
+| Indonesian        | id.yml |
+| Korean            | ko.yml |
+| Turkish          | tr.yml |
+| Vietnamese        | vi.yml |
+| Polish             | pl.yml |
+| Thai               | th.yml |
+| Italian              | it.yml |
+| Persian             | fa.yml  |
+| Swedish               | sv.yml  |
 
 To add or remove a language to the language list in /lang, simply modify the `config.yml` file.
-```
+```yaml
 language-list:
-- en
-- es
+  # English language (ISO code: en)
+  - en
+  # Spanish language (ISO code: es)
+  - es
+  # Add more languages below as needed. For example:
+  # - fr  # French (ISO code: fr)
+  # - de  # German (ISO code: de)
+  # - ja  # Japanese (ISO code: ja)
 ```
 ## Using LangManager as a developer
 The plugin is equipped with built-in functions to send messages directly to players and translate strings, eliminating the need for hardcoded messages in your code.
