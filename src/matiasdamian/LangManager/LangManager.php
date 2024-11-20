@@ -231,9 +231,15 @@ class LangManager
 	 * @param string $key The key for the language string.
 	 * @param string $iso The ISO code for the language.
 	 */
-	private function log(int $type, string $key, string $iso): void
+	private function logError(int $type, string $key, string $iso): void
 	{
-		$this->getLog()->set("[" . $type . "]: " . strtoupper($iso) . " " . $key, true);
+		$logMessage = "[" . date("Y-m-d H:i:s") . "] [ERROR] ";
+		$logMessage .= match($type){
+			self::LOG_TYPE_NOT_CASTABLE => "Parameter is not castable. Using ISO {$iso} and key {$key}.",
+			self::LOG_NO_ISO_MESSAGE => "No ISO message available for ISO {$iso}. Key {$key}.",
+			default => "Unknown error type {$type} for ISO {$iso} and key {$key}."
+		};
+		$this->getLog()->set($logMessage, true);
 	}
 
 	/**
@@ -449,7 +455,7 @@ class LangManager
 	private function translateString(string $key, string $iso, ...$params): string
 	{
 		if ($this->getMessage($iso, $key) === null) {
-			$this->log(self::LOG_NO_ISO_MESSAGE, $key, $iso);
+			$this->logError(self::LOG_NO_ISO_MESSAGE, $key, $iso);
 		
 			if ($this->getMessage(self::LANG_DEFAULT, $key) !== null) {
 				$iso = self::LANG_DEFAULT;
@@ -466,7 +472,7 @@ class LangManager
 
 
 			if (!is_string($param) && !is_float($param) && !is_int($param) && !($i === 0 && $param === null)) {
-				$this->log(self::LOG_TYPE_NOT_CASTABLE, $key, $iso);
+				$this->logError(self::LOG_TYPE_NOT_CASTABLE, $key, $iso);
 				$param = "";
 			}
 			$str = str_replace("{%" . $i . "}",  strval($param), $str);
