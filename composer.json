@@ -1,0 +1,12 @@
+{
+  "name": "matiasdamiandelsolar/LangManager",
+  "license": "GPL-3.0-only",
+  "type": "pocketmine-plugin",
+  "require": {
+    "pocketmine-mp/pocketmine-mp": "^5.0.0",
+    "geoip2/geoip2": "~3.1.0"
+  },
+  "autoload": {
+    "classmap": ["src"]
+  }
+}
