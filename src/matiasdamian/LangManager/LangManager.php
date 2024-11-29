@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace matiasdamian\LangManager;
 
+use matiasdamian\LangManager\task\DownloadMaxMindDatabaseTask;
 use pocketmine\command\CommandSender;
-use pocketmine\utils\TextFormat;
-use pocketmine\utils\Config;
-use pocketmine\utils\Filesystem;
 use pocketmine\player\Player;
 use pocketmine\Server;
-
-use GeoIp2\Database\Reader as GeoIpReader;
-
-use matiasdamian\LangManager\task\DownloadMaxMindDatabaseTask;
+use pocketmine\utils\Config;
+use pocketmine\utils\Filesystem;
+use pocketmine\utils\TextFormat;
+use Project\GeoIp2\Database\Reader as GeoIpReader;
 
 /**
  * Class LangManager
@@ -38,9 +36,9 @@ class LangManager
 
 	/** @var array<string, string[]> $lang Language data. */
 	private array $lang = [];
-	/** @var array<string, string[]> $ipLangCache Caches the languages based on IP addresses. */
+	/** @var array<string, string> $ipLangCache Caches the languages based on IP addresses. */
 	private array $ipLangCache = [];
-	/** @var array<string, string[]> $countryCodeCache */
+	/** @var array<string, string> $countryCodeCache */
 	private array $countryCodeCache = [];
 	/** @var GeoIpReader|null $geoIpReader GeoIP database reader for fetching country codes. */
 	private ?GeoIpReader $geoIpReader = null;
@@ -139,7 +137,7 @@ class LangManager
 		$this->prepare();
 	}
 
-	public static function close()
+	public static function close() : void
 	{
 		$instance = self::getInstance();
 		if ($instance === null){

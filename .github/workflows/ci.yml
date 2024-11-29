@@ -58,5 +58,5 @@ jobs:
         id: pharynx
       - uses: actions/upload-artifact@v3
         with:
-          name: LangManager.phar
+          name: plugin.phar
           path: ${{steps.pharynx.outputs.output-phar}}
