@@ -5,12 +5,17 @@
   "minimum-stability": "dev",
   "require": {
     "matiasdamiandelsolar/geoip2-php": "main-dev",
+    "matiasdamiandelsolar/maxmind-db-reader-php": "main-dev",
     "pocketmine/pocketmine-mp": "^5.0.0"
   },
   "repositories": [
     {
       "type": "vcs",
       "url": "https://github.com/matiasdamiandelsolar/geoip2-php"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/matiasdamiandelsolar/maxmind-db-reader-php"
     }
   ],
   "autoload": {
