@@ -5,6 +5,9 @@ namespace matiasdamian\LangManager\command;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
+use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginOwned;
+use pocketmine\plugin\PluginOwnedTrait;
 
 use matiasdamian\LangManager\Main;
 use matiasdamian\LangManager\LangManager;
@@ -15,16 +18,27 @@ use matiasdamian\LangManager\LangManager;
  * Handles the /lang command, allowing players to set their preferred language
  * from a list of available languages.
  */
-class LangCommand extends Command
+class LangCommand extends Command implements PluginOwned
 {
-	/** @var Main  */
-	private Main $plugin;
+	use PluginOwnedTrait;
 
+	/**
+	 * LangCommand constructor.
+	 *
+	 * @param Main $plugin
+	 */
 	public function __construct(Main $plugin)
 	{
 		parent::__construct("lang", "Set your preferred language", "/lang <language>", ["language"]);
 		$this->setPermission("langmanager.lang");
-		$this->plugin = $plugin;
+		$this->owningPlugin = $plugin;
+	}
+	
+	/**
+	 * @return Plugin
+	 */
+	public function getOwningPlugin(): Plugin{
+		return $this->owningPlugin;
 	}
 
 	/**
@@ -43,7 +57,7 @@ class LangCommand extends Command
 		}
 
 		$languages = [];
-		$languageList = array_change_key_case((array) $this->plugin->getConfig()->get("language-list"));
+		$languageList = array_change_key_case((array) $this->getOwningPlugin()->getConfig()->get("language-list"));
 		
 		foreach (LangManager::ALL_ISO_CODES as $language => $iso) {
 			if(in_array(strtolower($iso), $languageList)){
@@ -71,4 +85,5 @@ class LangCommand extends Command
 		LangManager::send("language_set", $sender, $language);
 		return true;
 	}
+	
 }
