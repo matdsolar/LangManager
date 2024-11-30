@@ -12,7 +12,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\TextFormat;
 
-use matiasdamian\LangManager\libs\_275022b34f55383e\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
+use matiasdamian\LangManager\libs\_a3fc4365ceb8144e\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
 
 /**
  * Class LangManager
@@ -859,12 +859,12 @@ class LangManager
 			return implode(" ", $strings);
 		} else {
 			$color = 0;
-			$msg = "";
+			$msg = self::DEFAULT_COLOR;
 			for ($i = 0; $i < strlen($str); $i++) {
 				if ($i + $offset !== 0) {
 					$color = self::$RAINBOW_PATTERN[($i + $offset) % count(self::$RAINBOW_PATTERN)];
 				}
-				$msg .= $color . $str[$i];
+				$msg .= $color . $str[$i] . self::DEFAULT_COLOR;
 			}
 			$offset += $i;
 			return $msg;
