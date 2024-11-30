@@ -11,7 +11,8 @@ use pocketmine\Server;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\TextFormat;
-use Project\GeoIp2\Database\Reader as GeoIpReader;
+
+use matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
 
 /**
  * Class LangManager
