@@ -12,7 +12,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\TextFormat;
 
-use matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
+use matiasdamian\LangManager\libs\_c1a42135c576607d\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
 
 /**
  * Class LangManager
