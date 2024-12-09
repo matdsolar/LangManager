@@ -31,7 +31,7 @@ class Logger implements \LogLevel{
 	 * and logs the message with the given context. The message can provide useful details like the ISO code and translation key.
 	 *
 	 * @param int $message The log message code, which determines the log level and format of the message.
-	 *                      This is typically a constant from the `LogMessages` class (e.g., `LogMessages::PARAMETER_NOT_CASTABLE`).
+	 *                      This is typically a constant from the `Logger` class (e.g., `Logger::PARAMETER_NOT_CASTABLE`).
 	 * @param array $context Additional context for the message, typically containing details such as ISO code and translation key.
 	 *                       Example: `["en", "language-key"]` for an ISO code and a translation key.
 	 * @return void
