@@ -45,7 +45,6 @@ class Main extends PluginBase
 	{
 
 		$this->getServer()->getCommandMap()->register("langmanager", new LangCommand($this));
-		$this->getLogger()->info("LangManager enabled.");
 	}
 
 	/**
@@ -54,6 +53,5 @@ class Main extends PluginBase
 	public function onDisable(): void
 	{
 		LangManager::close();
-		$this->getLogger()->info("LangManager disabled.");
 	}
 }
