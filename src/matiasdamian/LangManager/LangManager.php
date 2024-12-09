@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace matiasdamian\LangManager;
 
-use matiasdamian\LangManager\task\DownloadMaxMindDatabaseTask;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
 use pocketmine\Server;
@@ -12,8 +11,10 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\TextFormat;
 
-use matiasdamian\LangManager\libs\_f70ed3b2feabf317\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
-
+use matiasdamian\LangManager\libs\_46bb3f20790480d2\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
+use matiasdamian\LangManager\log\LogManager;
+use matiasdamian\LangManager\log\LogMessages;
+use matiasdamian\LangManager\task\DownloadDatabaseTask;
 /**
  * Class LangManager
  *
@@ -94,12 +95,8 @@ class LangManager
 
 	/** @var Main|null */
 	private ?Main $plugin;
-	/** @var Config|null $log */
-	private ?Config $log = null;
-
-	// Log types
-	private const LOG_TYPE_NOT_CASTABLE = 0;
-	private const LOG_NO_ISO_MESSAGE = -1;
+	/** @var LogManager */
+	private LogManager $logManager;
 
 	/**
 	 * Retrieves the singleton instance of LangManager.
@@ -120,10 +117,10 @@ class LangManager
 	}
 	
 	/**
-	 * @return Config
+	 * @return LogManager
 	 */
-	private function getLog() : Config{
-		return $this->log;
+	public function getLogManager() : LogManager{
+		return $this->logManager;
 	}
 
 	/**
@@ -135,6 +132,7 @@ class LangManager
 	{
 		self::$instance = $this;
 		$this->plugin = $plugin;
+		$this->logManager = new LogManager($this->plugin);
 		$this->prepare();
 	}
 
@@ -145,10 +143,17 @@ class LangManager
 			return;
 		}
 		$instance->getPlugin()->getConfig()->save();
-		$instance->getLog()->save();
+		$instance->getLogManager()->save();
 		foreach($instance->lang as $config){
 			$config->save();
 		}
+	}
+	
+	/**
+	 * This is a wrapper around the `sendMessage` function.
+	 */
+	public static function send(string $key, ...$params) : void{
+		self::sendMessage($key, ...$params);
 	}
 	
 	/**
@@ -158,7 +163,7 @@ class LangManager
 	 * @param mixed ...$params Additional parameters for the message.
 	 * @api
 	 */
-	public static function send(string $key, ...$params): void
+	public static function sendMessage(string $key, ...$params): void
 	{
 		$msg = self::translate($key, ...$params);
 		if (count($params) > 0 && $params[0] instanceof CommandSender) {
@@ -224,29 +229,10 @@ class LangManager
 	}
 
 	/**
-	 * Logs language translation usage to the log file.
-	 *
-	 * @param int $type The type of log message.
-	 * @param string $key The key for the language string.
-	 * @param string $iso The ISO code for the language.
-	 */
-	private function logError(int $type, string $key, string $iso): void
-	{
-		$logMessage = "[" . date("Y-m-d H:i:s") . "] [ERROR] ";
-		$logMessage .= match($type){
-			self::LOG_TYPE_NOT_CASTABLE => "Parameter is not castable. Using ISO {$iso} and key {$key}.",
-			self::LOG_NO_ISO_MESSAGE => "No ISO message available for ISO {$iso}. Key {$key}.",
-			default => "Unknown error type {$type} for ISO {$iso} and key {$key}."
-		};
-		$this->getLog()->set($logMessage, true);
-	}
-
-	/**
 	 * Prepares the LangManager by loading configurations and initializing GeoIP support.
 	 */
 	private function prepare(): void
 	{
-		$this->log = new Config($this->plugin->getServer()->getDataPath() . "LangManager.log", Config::ENUM);
 
 		$this->plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
 
@@ -256,7 +242,7 @@ class LangManager
 		$version = $this->plugin->getConfig()->get("maxmind-db-version");
 		if (!file_exists($this->plugin->getDataFolder() . Main::MAXMIND_DB_RESOURCE) or $version !== Main::MAXMIND_DB_RELEASE) {
 			$this->plugin->getLogger()->info("Downloading MaxMind GeoIP database...");
-			$this->plugin->getServer()->getAsyncPool()->submitTask(new DownloadMaxMindDatabaseTask());
+			$this->plugin->getServer()->getAsyncPool()->submitTask(new DownloadDatabaseTask());
 		} else {
 			$this->plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
 			$this->initializeGeoIpReader();
@@ -454,7 +440,7 @@ class LangManager
 	private function translateString(string $key, string $iso, ...$params): string
 	{
 		if ($this->getMessage($iso, $key) === null) {
-			$this->logError(self::LOG_NO_ISO_MESSAGE, $key, $iso);
+			$this->getLogManager()->logError(LogMessages::NO_ISO_MESSAGE, $key, $iso);
 		
 			if ($this->getMessage(self::LANG_DEFAULT, $key) !== null) {
 				$iso = self::LANG_DEFAULT;
@@ -471,7 +457,7 @@ class LangManager
 
 
 			if (!is_string($param) && !is_float($param) && !is_int($param) && !($i === 0 && $param === null)) {
-				$this->logError(self::LOG_TYPE_NOT_CASTABLE, $key, $iso);
+				$this->getLogManager()->logError(LogMessages::TYPE_NOT_CASTABLE, $key, $iso);
 				$param = "";
 			}
 			$str = str_replace("{%" . $i . "}",  strval($param), $str);
