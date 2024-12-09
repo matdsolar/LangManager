@@ -11,8 +11,8 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\TextFormat;
 
-use matiasdamian\LangManager\libs\_46bb3f20790480d2\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
-use matiasdamian\LangManager\log\LogManager;
+use matiasdamian\LangManager\libs\_0ddaf3b06dbd3843\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
+use matiasdamian\LangManager\log\Logger;
 use matiasdamian\LangManager\log\LogMessages;
 use matiasdamian\LangManager\task\DownloadDatabaseTask;
 /**
@@ -95,8 +95,8 @@ class LangManager
 
 	/** @var Main|null */
 	private ?Main $plugin;
-	/** @var LogManager */
-	private LogManager $logManager;
+	/** @var Logger */
+	private Logger $logger;
 
 	/**
 	 * Retrieves the singleton instance of LangManager.
@@ -117,10 +117,10 @@ class LangManager
 	}
 	
 	/**
-	 * @return LogManager
+	 * @return Logger
 	 */
-	public function getLogManager() : LogManager{
-		return $this->logManager;
+	public function getLogger() : Logger{
+		return $this->logger;
 	}
 
 	/**
@@ -132,7 +132,7 @@ class LangManager
 	{
 		self::$instance = $this;
 		$this->plugin = $plugin;
-		$this->logManager = new LogManager($this->plugin);
+		$this->logger = new Logger($this->plugin);
 		$this->prepare();
 	}
 
@@ -143,7 +143,7 @@ class LangManager
 			return;
 		}
 		$instance->getPlugin()->getConfig()->save();
-		$instance->getLogManager()->save();
+		$instance->getLogger()->save();
 		foreach($instance->lang as $config){
 			$config->save();
 		}
@@ -440,10 +440,17 @@ class LangManager
 	private function translateString(string $key, string $iso, ...$params): string
 	{
 		if ($this->getMessage($iso, $key) === null) {
-			$this->getLogManager()->logError(LogMessages::NO_ISO_MESSAGE, $key, $iso);
-		
+			$this->getLogger()->log(LogMessages::NO_ISO_MESSAGE, [$iso, $key]);
+			
 			if ($this->getMessage(self::LANG_DEFAULT, $key) !== null) {
+				$this->getLogger()->log(LogMessages::FALLBACK_TO_DEFAULT_LANGUAGE, [$iso, $key]);
 				$iso = self::LANG_DEFAULT;
+			}else{
+				$reflection = new \ReflectionClass(self::class);
+				$constants = $reflection->getConstants();
+				if(!in_array($iso, $constants, true)){
+					$this->getLogger()->log(LogMessages::UNSUPPORTED_ISO_CODE, [$iso]);
+				}
 			}
 		}
 
@@ -457,7 +464,7 @@ class LangManager
 
 
 			if (!is_string($param) && !is_float($param) && !is_int($param) && !($i === 0 && $param === null)) {
-				$this->getLogManager()->logError(LogMessages::TYPE_NOT_CASTABLE, $key, $iso);
+				$this->getLogger()->log(LogMessages::PARAMETER_NOT_CASTABLE, [$iso, $key]);
 				$param = "";
 			}
 			$str = str_replace("{%" . $i . "}",  strval($param), $str);
