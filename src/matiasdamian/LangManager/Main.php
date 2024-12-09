@@ -2,6 +2,7 @@
 
 namespace matiasdamian\LangManager;
 
+use matiasdamian\LangManager\log\LogMessages;
 use pocketmine\plugin\PluginBase;
 
 use matiasdamian\LangManager\command\LangCommand;
