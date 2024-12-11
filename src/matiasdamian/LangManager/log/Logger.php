@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace matiasdamian\LangManager\log;
 
-use matiasdamian\LangManager\LangManager;
 use matiasdamian\LangManager\Main;
 use pocketmine\utils\Config;
-use pocketmine\log\LogLevel;
 
 class Logger implements \LogLevel{
 	/** @var Main */
@@ -37,22 +35,28 @@ class Logger implements \LogLevel{
 	 * @return void
 	 */
 	public function log(int $message, array $context = []): void{
-		[$logLevel, $logMessage] = match ($message){
-			
+		[$logLevel, $logMessage] = match ($message) {
 			LogMessages::PARAMETER_NOT_CASTABLE => [
-				self::WARNING, "Parameter is not castable. Using ISO {$context[0]} and key {$context[1]}."
+				self::WARNING,
+				"Parameter is not castable. Using ISO {$context[0]} and key {$context[1]}."
 			],
 			LogMessages::NO_ISO_MESSAGE => [
-				self::WARNING, "No ISO message available for ISO {$context[0]}. Key {$context[1]}."
+				self::WARNING,
+				"No ISO message available for ISO {$context[0]}. Key {$context[1]}."
 			],
 			LogMessages::FALLBACK_TO_DEFAULT_LANGUAGE => [
-				self::INFO, "Falling back to default language for ISO {$context[0]}. Key: {$context[1]}."
+				self::INFO,
+				"Falling back to default language for ISO {$context[0]}. Key: {$context[1]}."
 			],
 			LogMessages::UNSUPPORTED_ISO_CODE => [
-				self::WARNING, "Unsupported ISO code: {$context[0]}. Using default language."
+				self::WARNING,
+				"Unsupported ISO code: {$context[0]}. Using default language."
 			],
 			
-			default => [self::ERROR, "Unknown log message: {$message} with context: " . json_encode($context)],
+			default => [
+				self::ERROR,
+				"Unknown log message: {$message} with context: " . json_encode($context)
+			]
 		};
 		
 		$this->plugin->getLogger()->log($logLevel, $logMessage);
@@ -64,6 +68,8 @@ class Logger implements \LogLevel{
 	
 	/**
 	 * Saves the logger
+	 *
+	 * @return void
 	 */
 	public function save(): void{
 		$this->log->save();
