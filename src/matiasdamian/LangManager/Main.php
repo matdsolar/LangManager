@@ -2,7 +2,7 @@
 
 namespace matiasdamian\LangManager;
 
-use matiasdamian\LangManager\log\LogMessages;
+use matiasdamian\LangManager\logger\LogMessages;
 use pocketmine\plugin\PluginBase;
 
 use matiasdamian\LangManager\command\LangCommand;
@@ -44,7 +44,6 @@ class Main extends PluginBase
 	 */
 	public function onEnable(): void
 	{
-
 		$this->getServer()->getCommandMap()->register("langmanager", new LangCommand($this));
 	}
 
