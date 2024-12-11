@@ -11,9 +11,9 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\TextFormat;
 
-use matiasdamian\LangManager\libs\_1fa3cfb30bc596c0\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
-use matiasdamian\LangManager\log\Logger;
-use matiasdamian\LangManager\log\LogMessages;
+use matiasdamian\LangManager\libs\_e74c23e1e440f8df\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
+use matiasdamian\LangManager\logger\Logger;
+use matiasdamian\LangManager\logger\LogMessages;
 use matiasdamian\LangManager\task\DownloadDatabaseTask;
 /**
  * Class LangManager
@@ -237,11 +237,11 @@ class LangManager
 		$this->plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
 
 		if (!class_exists(GeoIpReader::class)) {
-			$this->plugin->getLogger()->warning("geoip library not found. Multi-language support is disabled");
+			$this->getLogger()->error("geoip library not found. Multi-language support is disabled");
 		}
 		$version = $this->plugin->getConfig()->get("maxmind-db-version");
 		if (!file_exists($this->plugin->getDataFolder() . Main::MAXMIND_DB_RESOURCE) or $version !== Main::MAXMIND_DB_RELEASE) {
-			$this->plugin->getLogger()->info("Downloading MaxMind GeoIP database...");
+			$this->getLogger()->info("Downloading MaxMind GeoIP database...");
 			$this->plugin->getServer()->getAsyncPool()->submitTask(new DownloadDatabaseTask());
 		} else {
 			$this->plugin->saveResource(Main::MAXMIND_DB_RESOURCE, true);
@@ -257,7 +257,7 @@ class LangManager
 				try{
 					Filesystem::safeFilePutContents($newPath, Filesystem::fileGetContents($path));
 				}catch(\Exception $e){
-					$this->plugin->getLogger()->error("Can't write to file: " . $path);
+					$this->getLogger()->error("Can't write to file: " . $path);
 					continue;
 				}
 			}
@@ -440,16 +440,16 @@ class LangManager
 	private function translateString(string $key, string $iso, ...$params): string
 	{
 		if ($this->getMessage($iso, $key) === null) {
-			$this->getLogger()->log(LogMessages::NO_ISO_MESSAGE, [$iso, $key]);
+			$this->getLogger()->debug("No message for ISO {$iso} and key {$key}");
 			
 			if ($this->getMessage(self::LANG_DEFAULT, $key) !== null) {
-				$this->getLogger()->log(LogMessages::FALLBACK_TO_DEFAULT_LANGUAGE, [$iso, $key]);
+				$this->getLogger()->debug("Falling back to default language for key{$key} and ISO {$iso}");
 				$iso = self::LANG_DEFAULT;
 			}else{
 				$reflection = new \ReflectionClass(self::class);
 				$constants = $reflection->getConstants();
 				if(!in_array($iso, $constants, true)){
-					$this->getLogger()->log(LogMessages::UNSUPPORTED_ISO_CODE, [$iso]);
+					$this->getLogger()->warning("Unsupported ISO code {$iso}");
 				}
 			}
 		}
@@ -464,7 +464,7 @@ class LangManager
 
 
 			if (!is_string($param) && !is_float($param) && !is_int($param) && !($i === 0 && $param === null)) {
-				$this->getLogger()->log(LogMessages::PARAMETER_NOT_CASTABLE, [$iso, $key]);
+				$this->getLogger()->warning("Parameter is not castable. Using ISO {$iso} and key {$key}");
 				$param = "";
 			}
 			$str = str_replace("{%" . $i . "}",  strval($param), $str);
