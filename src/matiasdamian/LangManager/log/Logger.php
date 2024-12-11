@@ -29,13 +29,33 @@ class Logger implements \LogLevel{
 	 * and logs the message with the given context. The message can provide useful details like the ISO code and translation key.
 	 *
 	 * @param int $message The log message code, which determines the log level and format of the message.
-	 *                      This is typically a constant from the `Logger` class (e.g., `Logger::PARAMETER_NOT_CASTABLE`).
+	 *                      This is typically a constant from the `LogMessages` class (e.g., `LogMessages::PARAMETER_NOT_CASTABLE`).
 	 * @param array $context Additional context for the message, typically containing details such as ISO code and translation key.
 	 *                       Example: `["en", "language-key"]` for an ISO code and a translation key.
 	 * @return void
 	 */
 	public function log(int $message, array $context = []): void{
-		[$logLevel, $logMessage] = match ($message) {
+		[$logLevel, $logMessage] = $this->getLogDetails($message, $context);
+		
+		// Log the message with the appropriate level
+		$this->plugin->getLogger()->log($logLevel, $logMessage);
+		
+		// Prepare and format the log message
+		$formattedMessage = $this->formatLogMessage($logLevel, $logMessage);
+		
+		// Save the message to the log file
+		$this->log->set($formattedMessage, true);
+	}
+	
+	/**
+	 * Returns the log level and message for the provided log code.
+	 *
+	 * @param int $message The log message code.
+	 * @param array $context The context for the message.
+	 * @return array An array containing the log level and log message.
+	 */
+	private function getLogDetails(int $message, array $context): array{
+		return match ($message){
 			LogMessages::PARAMETER_NOT_CASTABLE => [
 				self::WARNING,
 				"Parameter is not castable. Using ISO {$context[0]} and key {$context[1]}."
@@ -52,18 +72,23 @@ class Logger implements \LogLevel{
 				self::WARNING,
 				"Unsupported ISO code: {$context[0]}. Using default language."
 			],
-			
 			default => [
 				self::ERROR,
 				"Unknown log message: {$message} with context: " . json_encode($context)
 			]
 		};
-		
-		$this->plugin->getLogger()->log($logLevel, $logMessage);
+	}
+	
+	/**
+	 * Formats the log message with the current timestamp and log level.
+	 *
+	 * @param string $logLevel The log level (e.g., INFO, WARNING, ERROR).
+	 * @param string $logMessage The log message.
+	 * @return string The formatted log message.
+	 */
+	private function formatLogMessage(string $logLevel, string $logMessage): string{
 		$logLevel = strtoupper($logLevel);
-		$formattedMessage = sprintf("[%s] [%s] %s", date("Y-m-d H:i:s"), $logLevel, $logMessage);
-		
-		$this->log->set($formattedMessage, true);
+		return sprintf("[%s] [%s] %s", date("Y-m-d H:i:s"), $logLevel, $logMessage);
 	}
 	
 	/**
