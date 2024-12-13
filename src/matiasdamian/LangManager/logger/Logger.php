@@ -10,16 +10,16 @@ use pocketmine\utils\Config;
 /**
  * Logger class responsible for managing logging functionality within the LangManager plugin
  */
-class Logger implements \LogLevel{
+class Logger{
 	use LoggerTrait;
+	
+	private const LOG_SIZE_LIMIT = 1024 * 1024 * 10; // 10 MB
 	
 	/** @var Main */
 	private readonly Main $plugin;
 	
 	/** @var Config */
 	private readonly Config $logFile;
-	
-	private const LOG_SIZE_LIMIT = 1024 * 1024 * 10; // 10 MB
 	
 	/**
 	 * Logger constructor.
@@ -77,7 +77,8 @@ class Logger implements \LogLevel{
 	 * @return void
 	 */
 	private function rotateLogs() : void{
-		if(filesize($this->getPlugin()->getServer()->getDataPath() . "LangManager.log") > self::LOG_SIZE_LIMIT){
+		$logFilePath = $this->getPlugin()->getServer()->getDataPath() . "LangManager.log";
+		if(filesize($logFilePath) > self::LOG_SIZE_LIMIT){
 			$this->logFile->setAll([]);
 		}
 	}
