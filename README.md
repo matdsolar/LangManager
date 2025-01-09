@@ -1,19 +1,20 @@
 # LangManager
 ![](https://github.com/matiasdamiandelsolar/LangManager/blob/main/icon.png)
 
-LangManager is a powerful plugin that adds multilingual support to your Minecraft server, enabling seamless language management and translation for players. With this plugin, server owners can easily provide a personalized experience by allowing players to select their preferred language.
+LangManager is a plugin for PocketMine-MP with multi-language support and variable translation.
 
-## Key Features
+## Key features
 
-### Automatic Language Detection
-The plugin automatically detects the user’s language and localizes the server based on the player’s location. Players always have the option to choose another language using the command /setlang
+### Smart language setup
+Detects players’ language based on their location and sets it automatically.
 
-### Language Switching
-Players can effortlessly switch between available languages using /setlang, allowing them to enjoy the game in their preferred language.
-### Centralized Message Management
-With LangManager, managing in-game messages, greetings, command responses, and error messages becomes easy. All messages are stored in easily manageable language files, allowing for straightforward translations tailored to the server owner’s preferences.
+### Quick language selection
+Switch between available languages with the /setlang command.
 
-## Using LangManager as a user
+### Effortless message customization
+All in-game messages -such as greetings, commands, and error notifications- are stored in easily editable language files, making customization and translation straightforward.
+
+## Getting started with LangManager
 The language files are stored in lang/ within your server folder. Make sure the server is turned off before editing any language files.
 
 Language files supported:
@@ -22,24 +23,24 @@ Language files supported:
 |------------------|--------|
 | English          | en.yml |
 | Spanish          | es.yml |
-| Hindi           | hi.yml |
+ | Hindi           | hi.yml |
 | Portuguese        | pt.yml |
 | Chinese            | zh.yml |
-| Russian            | ru.yml |
+ | Russian            | ru.yml |
 | French            | fr.yml |
 | German            | de.yml |
 | Arabic            | ar.yml |
 | Japanese           | ja.yml |
-| Bengali           | bn.yml |
-| Indonesian        | id.yml |
-| Korean            | ko.yml |
-| Turkish          | tr.yml |
-| Vietnamese        | vi.yml |
-| Polish             | pl.yml |
-| Thai               | th.yml |
-| Italian              | it.yml |
-| Persian             | fa.yml  |
-| Swedish               | sv.yml  |
+ | Bengali           | bn.yml |
+ | Indonesian        | id.yml |
+ | Korean            | ko.yml |
+  | Turkish          | tr.yml |
+  | Vietnamese        | vi.yml |
+  | Polish             | pl.yml |
+   | Thai               | th.yml |
+  | Italian              | it.yml |
+   | Persian             | fa.yml  |
+ | Swedish               | sv.yml  |
 
 To add or remove a language to the language list in /lang, simply modify the `config.yml` file.
 ```yaml
@@ -53,7 +54,7 @@ language-list:
   # - de  # German (ISO code: de)
   # - ja  # Japanese (ISO code: ja)
 ```
-## Using LangManager as a developer
+## For developers
 The plugin is equipped with built-in functions to send messages directly to players and translate strings, eliminating the need for hardcoded messages in your code.
 This section will guide you on how to use the following methods:
 - `LangManager::addKey()`
