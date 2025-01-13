@@ -39,7 +39,7 @@ class Logger{
 		$logFilePath = $this->getLogFilePath();
 		
 		if(file_exists($logFilePath) && filesize($logFilePath) > self::LOG_SIZE_LIMIT){
-			rename($logFilePath, $logFilePath . '_' . date("Y-m-d_H-i-s");
+			rename($logFilePath, $logFilePath . '_' . date("Y-m-d_H-i-s"));
 			$this->logFile->setAll([]);
 		}
 		
