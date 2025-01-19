@@ -1,21 +1,21 @@
 # LangManager
 ![](https://github.com/matiasdamiandelsolar/LangManager/blob/main/icon.png)
 
-LangManager is a plugin for PocketMine-MP with multi-language support and variable translation.
+LangManager is a PocketMine plugin that supports multiple languages and variable translations.
 
-## Key features
+## Features
 
-### Smart language setup
-Detects players’ language based on their location and sets it automatically.
+### Language localisation
+Detects and adjusts the server’s language based on the player’s geographic location automatically.
 
-### Quick language selection
-Switch between available languages with the /setlang command.
+### Multiple languages
+Easily switch to your preferred language in-game using the /setlang command, choosing from the available languages.
 
-### Effortless message customization
-All in-game messages -such as greetings, commands, and error notifications- are stored in easily editable language files, making customization and translation straightforward.
+### Customizable messages
+Customize any server message, from a join message to command execution messages, to suit the player’s language. Language strings are stored in easy-to-edit language files.
 
-## Getting started with LangManager
-The language files are stored in lang/ within your server folder. Make sure the server is turned off before editing any language files.
+## Language files
+You can find the language files in the /lang folder within your server directory. Make sure the server is turned off before editing any of them.
 
 Language files supported:
 
