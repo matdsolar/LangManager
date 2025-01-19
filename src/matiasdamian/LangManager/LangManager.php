@@ -11,7 +11,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\TextFormat;
 
-use matiasdamian\LangManager\libs\_634094b2b8492696\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
+use matiasdamian\LangManager\libs\_0e241c61da8bc3f7\matiasdamian\GeoIp2\Database\Reader as GeoIpReader;
 use matiasdamian\LangManager\logger\Logger;
 use matiasdamian\LangManager\logger\LogMessages;
 use matiasdamian\LangManager\task\DownloadDatabaseTask;
