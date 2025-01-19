@@ -17,7 +17,7 @@ class Main extends PluginBase
 
 	public const MAXMIND_DB_RESOURCE = "GeoLite2-Country.mmdb";
 	public const MAXMIND_DB_RELEASE = "2024.11.10";
-	public const MAXMIND_DB_RESOURCE_URL = "https://github.com/matiasdamiandelsolar/GeoLite.mmdb/releases/download/2024.11.10/GeoLite2-Country.mmdb";
+	public const MAXMIND_DB_RESOURCE_URL = "https://github.com/matdsolar/GeoLite.mmdb/releases/download/2024.11.10/GeoLite2-Country.mmdb";
 
 	/**
 	 * @var Main|null $instance
